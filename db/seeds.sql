@@ -18,7 +18,7 @@ VALUES ("Accountant", 100000, 1),
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Kevin", "Garnett", 1, null),
        ("Kobe", "Bryant", 2, null),
-       ("Dwyane", "Wade", 3, null),
+       ("Dwyane", "Wade", 3, 2),
        ("Lebron", "James", 4, null),
        ("Devin", "Booker", 5, null),
        ("Kevin", "Durant", 6, null),

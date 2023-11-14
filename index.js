@@ -93,13 +93,15 @@ const viewAllEmployees = () => {
   role.title AS role_title,
   role.salary,
   department.name AS department_name,
-  manager_id
+  CONCAT(manager.first_name, ' ', manager.last_name) AS manager
 FROM
   employee
 JOIN
   role ON employee.role_id = role.id
 JOIN
-  department ON role.department_id = department.id;`, function (err, results){
+  department ON role.department_id = department.id
+LEFT JOIN 
+employee as manager ON employee.manager_id = manager.id OR employee.manager_id = null;`, function (err, results){
     if (err) throw err;
     console.table(results);
     startApp();
@@ -136,13 +138,14 @@ const addDepartment = () => {
 };
 
 // Function to add a new role to the role table
-const addRole = () => {
- 
+const addRole = async () => {
+ const [departments] = await db.promise().query('SELECT * FROM department');
+ console.log(departments);
   inquirer
     .prompt([
       {
         type: 'input',
-        name: 'name',
+        name: 'title',
         message: 'Enter the name of the role:',
         validate: (input) => {
           if (input.trim() === '') {
@@ -153,7 +156,7 @@ const addRole = () => {
       },
       {
         type: 'input',
-        name: 'name',
+        name: 'salary',
         message: 'What is the salary for this role?',
         validate: (input) => {
           if (input.trim() === '') {
@@ -165,19 +168,25 @@ const addRole = () => {
       {
         type: 'list',
         action: 'action',
+        name: 'department_id',
         message: 'Select the department for this role:',
-        choices: 'SELECT (name) FROM department'
+        choices: departments.map(({id, name})=> {
+          return {
+            name,
+            value: id
+          }
+        })
       }
     ])
     .then((answers) => {
-      const { name } = answers;
-
+      const { title, salary, department_id } = answers;
+      
       const query = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
 
-      db.query(query, [name], function (err, result) {
+      db.query(query, [title, salary, department_id], function (err, result) {
         if (err) throw err;
 
-        console.log(`Role '${name}' added successfully.`);
+        console.log(`Role '${title}' added successfully.`);
         startApp(); 
       });
     });
