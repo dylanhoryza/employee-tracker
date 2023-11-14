@@ -9,7 +9,8 @@ SELECT
   employee.last_name,
   role.title AS role_title,
   role.salary,
-  department.name AS department_name
+  department.name AS department_name,
+  manager_id
 FROM
   employee
 JOIN

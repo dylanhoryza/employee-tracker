@@ -86,7 +86,20 @@ const viewAllRoles = () => {
 };
 // Function to view the employee table
 const viewAllEmployees = () => {
-  db.query('SELECT * FROM employee', function (err, results){
+  db.query(`SELECT
+  employee.id AS employee_id,
+  employee.first_name,
+  employee.last_name,
+  role.title AS role_title,
+  role.salary,
+  department.name AS department_name,
+  manager_id
+FROM
+  employee
+JOIN
+  role ON employee.role_id = role.id
+JOIN
+  department ON role.department_id = department.id;`, function (err, results){
     if (err) throw err;
     console.table(results);
     startApp();
@@ -169,6 +182,79 @@ const addRole = () => {
       });
     });
 };
+
+// Function to add a new employee
+
+const addEmployee = () => {
+  inquirer
+    .prompt([
+    {
+      type: 'input',
+      name: 'first_name',
+      message: "Enter the first name of the employee.",
+      validate: (input) => {
+        if (input.trim() === '') {
+          return 'Please enter a valid first name.';
+        }
+        return true;
+      },
+    },
+    {
+      type: 'input',
+      name: 'last_name',
+      message: 'Enter the last name of the employee.',
+      validate: (input) => {
+        if (input.trim() === '') {
+          return 'Please enter a valid last name.';
+        }
+        return true;
+      },
+    },
+    {
+      type: 'list',
+      action: 'action',
+      message: 'Select the role for this employee.',
+      choices: '',
+    },
+    {
+      type: 'list',
+      action: 'action',
+      message: 'Select the manager for this employee.',
+      choices: '',
+    }
+  ])    
+  .then((answers) => {
+    const { name } = answers;
+
+    const query = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
+
+    db.query(query, [name], function (err, result) {
+      if (err) throw err;
+
+      console.log(`Employee '${name}' added successfully.`);
+      startApp(); 
+    });
+  });
+};
+
+//Function to update an employee role
+const updateEmployee = () => {
+  inquirer
+    .prompt([
+    {
+      type: 'list',
+      action: 'action',
+      message: 'Select an employee to update their role.',
+      choices: '',
+    },
+    {
+      type: 'list',
+      action: 'action',
+      message: 'Select a new role to assign to the employee.',
+      choices: '',
+    },
+  ])
+}
 
 // Function to exit out of the app
 const exitApp = () => {
