@@ -10,11 +10,13 @@ SELECT
   role.title AS role_title,
   role.salary,
   department.name AS department_name,
-  manager_id
+  CONCAT(manager.first_name, ' ', manager.last_name) AS manager
 FROM
   employee
 JOIN
   role ON employee.role_id = role.id
 JOIN
-  department ON role.department_id = department.id;
+  department ON role.department_id = department.id
+LEFT JOIN 
+employee as manager ON employee.manager_id = manager.id OR employee.manager_id = null;
 
