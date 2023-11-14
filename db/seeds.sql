@@ -19,10 +19,10 @@ INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Kevin", "Garnett", 1, null),
        ("Kobe", "Bryant", 2, null),
        ("Dwyane", "Wade", 3, null),
-       ("Lebron", "James", 3, null),
-       ("Devin", "Booker", 4, null),
-       ("Kevin", "Durant", 4, null),
-       ("Allen", "Iverson", 5, null),
-       ("Steph", "Curry", 5, null);
+       ("Lebron", "James", 4, null),
+       ("Devin", "Booker", 5, null),
+       ("Kevin", "Durant", 6, null),
+       ("Allen", "Iverson", 7, null),
+       ("Steph", "Curry", 8, null);
 
 
