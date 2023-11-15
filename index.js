@@ -254,7 +254,7 @@ const addEmployee = async () => {
     db.query(query, [first_name, last_name, selectedRole.id, selectedEmployee.id], function (err, result) {
       if (err) throw err;
 
-      console.log(`Employee '${first_name} + ' ' + ${last_name}' added successfully.`);
+      console.log(`Employee '${first_name} ${last_name}' added successfully.`);
       startApp(); 
     });
   });
@@ -300,7 +300,7 @@ const updateEmployee = async () => {
     db.query(query, [selectedRole.id, selectedEmployee.id], function (err, result) {
       if (err) throw err;
 
-      console.log(`Employee '${selectedEmployee}' updated successfully.`);
+      console.log(`Employee '${employee_id}' updated successfully.`);
       startApp(); 
     });
 
