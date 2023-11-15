@@ -140,7 +140,6 @@ const addDepartment = () => {
 // Function to add a new role to the role table
 const addRole = async () => {
  const [departments] = await db.promise().query('SELECT * FROM department');
- console.log(departments);
   inquirer
     .prompt([
       {
@@ -194,7 +193,9 @@ const addRole = async () => {
 
 // Function to add a new employee
 
-const addEmployee = () => {
+const addEmployee = async () => {
+  const [employee] = await db.promise().query('SELECT * FROM employee');
+  const [role] = await db.promise().query('SELECT * FROM role');
   inquirer
     .prompt([
     {
@@ -221,48 +222,89 @@ const addEmployee = () => {
     },
     {
       type: 'list',
+      name: 'role_id',
       action: 'action',
       message: 'Select the role for this employee.',
-      choices: '',
+      choices: role.map(({id, title})=> {
+        return {
+          id,
+          value: title
+        }
+      })
     },
     {
       type: 'list',
+      name: 'manager_id', 
       action: 'action',
       message: 'Select the manager for this employee.',
-      choices: '',
+      choices: employee.map(({id, first_name, last_name})=> {
+        return {
+          id,
+          value: first_name + ' ' + last_name
+        }
+      })
     }
   ])    
   .then((answers) => {
-    const { name } = answers;
-
+    const { first_name, last_name, role_id, manager_id } = answers;
+    const selectedRole = role.find((role) => role.title === 'Hiring Manager' || 'Accountant' || 'Junior Developer' || 'Senior Developer' || 'Sales Associate' || 'Sales Manager' || 'Lawyer' || 'Claims Manager');
+    const selectedEmployee = employee.find((employee) => employee.first_name + ' ' + employee.last_name === 'Kevin Garnett' || 'Kobe Bryant' || 'Dwyane Wade' || 'Lebron James' || 'Devin Booker' || 'Kevin Durant' || 'Allen Iverson' || 'Steph Curry');
     const query = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
 
-    db.query(query, [name], function (err, result) {
+    db.query(query, [first_name, last_name, selectedRole.id, selectedEmployee.id], function (err, result) {
       if (err) throw err;
 
-      console.log(`Employee '${name}' added successfully.`);
+      console.log(`Employee '${first_name} + ' ' + ${last_name}' added successfully.`);
       startApp(); 
     });
   });
 };
 
 //Function to update an employee role
-const updateEmployee = () => {
+const updateEmployee = async () => {
+  const [employee] = await db.promise().query('SELECT * FROM employee');
+  const [role] = await db.promise().query('SELECT * FROM role');
   inquirer
     .prompt([
     {
       type: 'list',
+      name: 'employee_id',
       action: 'action',
       message: 'Select an employee to update their role.',
-      choices: '',
+      choices: employee.map(({id, first_name, last_name})=> {
+        return {
+          id,
+          value: first_name + ' ' + last_name
+        }
+      })
     },
     {
       type: 'list',
+      name: 'role_id',
       action: 'action',
       message: 'Select a new role to assign to the employee.',
-      choices: '',
+      choices: role.map(({id, title})=> {
+        return {
+          id,
+          value: title
+        }
+      })
     },
-  ])
+  ]).then((answers) => {
+    const { employee_id, role_id} = answers;
+    const selectedRole = role.find((role) => role.title === 'Hiring Manager' || 'Accountant' || 'Junior Developer' || 'Senior Developer' || 'Sales Associate' || 'Sales Manager' || 'Lawyer' || 'Claims Manager');
+    const selectedEmployee = employee.find((employee) => employee.first_name + ' ' + employee.last_name === 'Kevin Garnett' || 'Kobe Bryant' || 'Dwyane Wade' || 'Lebron James' || 'Devin Booker' || 'Kevin Durant' || 'Allen Iverson' || 'Steph Curry');
+
+    const query = 'UPDATE employee SET role_id = ? WHERE id = ?';
+    
+    db.query(query, [selectedRole.id, selectedEmployee.id], function (err, result) {
+      if (err) throw err;
+
+      console.log(`Employee '${selectedEmployee}' updated successfully.`);
+      startApp(); 
+    });
+
+  })
 }
 
 // Function to exit out of the app
